@@ -15,13 +15,5 @@ class File(models.Model):
         return f"{self.file} {self.uploaded_at} {self.processed}"
 
     class Meta:
-        applabel = 'file'
         verbose_name = "Файл"
         verbose_name_plural = "Файлы"
-
-
-class BaseModel(models.Model):
-
-    class Meta:
-        abstract = True  # specify this model as an Abstract Model
-        app_label = 'explicit'
