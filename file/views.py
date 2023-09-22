@@ -1,7 +1,7 @@
 from django.core.files.storage import FileSystemStorage
 from rest_framework import generics, status
 from rest_framework.response import Response
-
+from file.tasks import file_task
 from file.models import File
 from file.paginators import FilePaginator
 from file.serializer import FileSerializer
@@ -55,10 +55,11 @@ class FileUploadAPIView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = FileSerializer(data=request.data)
-        file = self.request.FILES["file"]
         if serializer.is_valid():
-            serializer.save(file=file)
+            file = serializer.save()
+            file_task.delay(file.id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
